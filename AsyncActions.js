@@ -39,26 +39,25 @@ const fetchUsersFailure = error => {
 }
 
 const fetchUsers = () => {
-    return function(dispatch) {
-        dispatch(fetchUsersRequest())
-       axios.get(`https://jsonplaceholder.typicode.com/users`)
-       .then(response => {
-           //response.data is the array of users
-           const users = response.data.map(user => user.id)
-           dispatch(fetchUsersSuccess(users))
-           console.log(users)
-       })
-       .catch(error => {
-           //error.message is the error description
-           dispatch(fetchUsersFailure(error.message))
-
-       })
+    return (dispatch) => {
+      dispatch(fetchUsersRequest())
+      axios
+        .get('https://jsonplaceholder.typicode.com/users')
+        .then(response => {
+          // response.data is the users
+          const users = response.data
+          dispatch(fetchUsersSuccess(users))
+        })
+        .catch(error => {
+          // error.message is the error message
+          dispatch(fetchUsersFailure(error.message))
+        })
     }
-}
+  }
 
 
 const reducer = (state = initialState , action) => {  //reducer
-    switch(action.type) {  // changing state based on action type
+    switch(action.type) {             // changing state based on action type
         case FETCH_USERS_REQUEST:
            return {
                 ...state,
@@ -80,13 +79,6 @@ const reducer = (state = initialState , action) => {  //reducer
 }
 
 const store = createStore(reducer,applyMiddleware(thunkMiddleware))
+console.log(' output:' ,store.getState())
 store.subscribe(() => { console.log(store.getState()) })
-store.dispatch(fetchUsers)
-
-/*  Error: Cannot find module 'D:\react-redux\react-redux-app\src\asynchActions.js'
-    at Function.Module._resolveFilename (node:internal/modules/cjs/loader:925:15)
-    at Function.Module._load (node:internal/modules/cjs/loader:769:27)
-    at node:internal/main/run_main_module:17:47 {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: []
-  */
+store.dispatch(fetchUsers())
